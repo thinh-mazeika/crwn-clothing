@@ -7,7 +7,7 @@ const config = {
   authDomain: "crwn-db-17199.firebaseapp.com",
   databaseURL: "https://crwn-db-17199.firebaseio.com",
   projectId: "crwn-db-17199",
-  storageBucket: "",
+  storageBucket: "crwn-db-17199.appspot.com",
   messagingSenderId: "979851153325",
   appId: "1:979851153325:web:677e55011dc804c2"
 };
@@ -39,34 +39,37 @@ export const createUserProfileDocument = async (userAuth, additonalData) => {
   return userRef;
 };
 
-export const addCollectionAndDocuments = async (collectionKey, objectsToAdd) => {
+export const addCollectionAndDocuments = async (
+  collectionKey,
+  objectsToAdd
+) => {
   const collectionRef = firestore.collection(collectionKey);
-  
+
   const batch = firestore.batch();
   objectsToAdd.forEach(obj => {
     const newDocRef = collectionRef.doc();
-    batch.set(newDocRef, obj)
+    batch.set(newDocRef, obj);
   });
 
-  return await batch.commit();
+   return await batch.commit();
 };
 
-export const convertCollectionsSnapshotToMap =(collections) => {
-  const transformedCollection = collections.docs.map(doc => {
-    const { title, items } = doc.data();
+export const convertCollectionsSnapshotToMap = collectionsSnapshot => {
+  const transformedCollection = collectionsSnapshot.docs.map(docSnapshot => {
+    const { title, items } = docSnapshot.data();
 
     return {
       routeName: encodeURI(title.toLowerCase()),
-      id: doc.id,
+      id: docSnapshot.id,
       title,
       items
-    }
+    };
   });
 
-  return transformedCollection.reduce((accumulator, collection) => {
-    accumulator[collection.title.toLowerCase()] = collection;
-    return accumulator;
-  }, {});
+ return transformedCollection.reduce((accumulator, collection) => {
+   accumulator[collection.title.toLowerCase()] = collection;
+   return accumulator;
+ } , {});
 };
 
 
